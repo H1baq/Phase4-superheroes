@@ -1,5 +1,9 @@
-from .app import db
+
+from .extensions import db
 from sqlalchemy.orm import validates
+
+
+
 class Hero(db.Model):
     __tablename__="heroes"
     id=db.Column(db.Integer, primary_key=True)
@@ -7,6 +11,13 @@ class Hero(db.Model):
     super_name=db.Column(db.String)
 
     hero_powers = db.relationship('HeroPower', backref='hero', cascade='all, delete')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "super_name": self.super_name
+        }
 
 
 
@@ -16,6 +27,17 @@ class Power (db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     description = db.Column(db.String)
+
+
+    hero_powers = db.relationship('HeroPower', backref='power', cascade='all, delete')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description
+        }
+
 
     @validates('description')
     def validate_description(self, key, value):
@@ -38,3 +60,10 @@ class HeroPower(db.Model):
         if value not in ['Strong', 'Weak', 'Average']:
             raise ValueError("Strength must be 'Strong', 'Weak', or 'Average'")
         return value
+    
+
+
+
+
+
+    
